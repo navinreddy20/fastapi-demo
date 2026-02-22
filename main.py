@@ -18,7 +18,7 @@ products = [
 
 @app.get("/products/")
 def get_all_products():
-    return products
+    return Products
 
 
 @app.get("/products/{product_id}")

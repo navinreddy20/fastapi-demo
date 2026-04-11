@@ -17,6 +17,8 @@ body { margin: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto
 /* Topbar */
 .topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; color: #fff; }
 .brand { display: flex; align-items: center; gap: 12px; }
+.brand h1 { margin: 0; font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em; }
+.user-chip { margin-top: 4px; font-size: 12px; font-weight: 600; opacity: 0.88; }
 .brand-badge { font-size: 28px; filter: drop-shadow(0 4px 10px rgba(0,0,0,.25)); }
 .top-actions { display: flex; gap: 10px; }
 
@@ -99,7 +101,7 @@ body { margin: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto
 }
 .product-table thead th:nth-child(1) { width: 6%; } /* ID */
 .product-table thead th:nth-child(2) { width: 15%; } /* Name */
-.product-table thead th:nth-child(3) { width: 25%; } /* Description */
+.product-table thead th:nth-child(3) { width: 18%; } /* Type */
 .product-table thead th:nth-child(4) { width: 12%; } /* Price */
 .product-table thead th:nth-child(5) { width: 12%; } /* Quantity */
 .product-table thead th:nth-child(6) { width: 30%; } /* Actions - increased significantly */
@@ -162,7 +164,16 @@ body { margin: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto
 .desc-cell {
   color: var(--text-500);
   font-size: 14px;
-  max-width: 200px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.id-cell {
+  font-size: 12px;
+  font-family: ui-monospace, monospace;
+  color: var(--text-700);
+  max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

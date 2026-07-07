@@ -1,22 +1,35 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
 import database_models
-from database import SessionLocal, engine
 from models import Product
-
-database_models.Base.metadata.create_all(bind=engine)
+from database import SessionLocal, engine
+from sqlalchemy.orm import Session
 
 app = FastAPI()
 
-# CORS for React dev server
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+database_models.Base.metadata.create_all(bind=engine)
+
+
+products = [
+    Product(id=1, name="phone", description="Iphone 16", price=99, quantity=5),
+    Product(id=2, name="laptop", description="macbook 16", price=99, quantity=5),
+    Product(id=3, name="Pen", description="A blue ink pen", price=1.99, quantity=100),
+    Product(id=4, name="Table", description="A wooden table", price=199.99, quantity=20),
+    Product(id=5, name="Chair", description="A comfortable chair", price=89.99, quantity=15)
+]
 
 def get_db():
     db = SessionLocal()
@@ -25,73 +38,96 @@ def get_db():
     finally:
         db.close()
 
-
-# list of products with 4 products like phones, laptops, pens, tables
-products = [
-    Product(id=1, name="Phone", description="A smartphone", price=699.99, quantity=50),
-    Product(id=2, name="Laptop", description="A powerful laptop", price=999.99, quantity=30),
-    Product(id=3, name="Pen", description="A blue ink pen", price=1.99, quantity=100),
-    Product(id=4, name="Table", description="A wooden table", price=199.99, quantity=20),
-]
-
-product = Product(id=5, name="Chair", description="A comfortable chair", price=89.99, quantity=15)
-
-
-
-
 def init_db():
     db = SessionLocal()
-
+    # Check if products already exist
     existing_count = db.query(database_models.Product).count()
-
     if existing_count == 0:
-        for product in products:
-            db.add(database_models.Product(**product.model_dump()))
+        for product_data in products:
+            # Convert Pydantic model to SQLAlchemy model
+            db_product = database_models.Product(
+                id=product_data.id,
+                name=product_data.name,
+                description=product_data.description,
+                price=product_data.price,
+                quantity=product_data.quantity
+            )
+            db.add(db_product)
         db.commit()
-        print("Database initialized with sample products.")
-        
     db.close()
 
-init_db()    
+init_db()
 
+
+@app.get("/products")
 @app.get("/products/")
 def get_all_products(db: Session = Depends(get_db)):
     products = db.query(database_models.Product).all()
     return products
 
-
 @app.get("/products/{product_id}")
+@app.get("/products/{product_id}/")
 def get_product_by_id(product_id: int, db: Session = Depends(get_db)):
     product = db.query(database_models.Product).filter(database_models.Product.id == product_id).first()
     if product:
         return product
     return {"error": "Product not found"}
 
+# @app.post("/products")
+# def create_product(product: Product):
+#     products.append(product)
+#     return product
+
+@app.post("/products")
 @app.post("/products/")
 def create_product(product: Product, db: Session = Depends(get_db)):
-    db.add(database_models.Product(**product.model_dump()))
-    db.commit()
-    return {"message": "Product created successfully", "product": product}
-
-@app.put("/products/{product_id}")
-def update_product(product_id: int, product: Product, db: Session = Depends(get_db)):
-    db_product = db.query(database_models.Product).filter(database_models.Product.id == product_id).first()
-    if not db_product:
-        raise HTTPException(status_code=404, detail="Product not found")
-    db_product.name = product.name
-    db_product.description = product.description
-    db_product.price = product.price
-    db_product.quantity = product.quantity
+    # Convert Pydantic model to SQLAlchemy model
+    db_product = database_models.Product(
+        id=product.id,
+        name=product.name,
+        description=product.description,
+        price=product.price,
+        quantity=product.quantity
+    )
+    db.add(db_product)
     db.commit()
     db.refresh(db_product)
-    return {"message": "Product updated successfully", "product": db_product}
+    return db_product
+
+
+
+
+@app.put("/products/{product_id}")
+@app.put("/products/{product_id}/")
+def update_product(product_id: int, updated_product: Product, db: Session = Depends(get_db)):
+    product = db.query(database_models.Product).filter(database_models.Product.id == product_id).first()
+    if product:
+        product.name = updated_product.name
+        product.description = updated_product.description
+        product.price = updated_product.price
+        product.quantity = updated_product.quantity
+        db.commit()
+        db.refresh(product)
+    if product:
+        return product
+    return {"error": "Product not found"}
 
 
 @app.delete("/products/{product_id}")
+@app.delete("/products/{product_id}/")
 def delete_product(product_id: int, db: Session = Depends(get_db)):
-    db_product = db.query(database_models.Product).filter(database_models.Product.id == product_id).first()
-    if not db_product:
-        raise HTTPException(status_code=404, detail="Product not found")
-    db.delete(db_product)
-    db.commit()
-    return {"message": "Product deleted successfully"}
+    product = db.query(database_models.Product).filter(database_models.Product.id == product_id).first()
+    if product:
+        db.delete(product)
+        db.commit()
+        return {"message": "Product deleted successfully", "product": product}
+    return {"error": "Product not found"}
+
+
+@app.get("/")
+def greet():
+    return "Welcome to Telusko Trac"
+
+
+message = greet()
+print(message)

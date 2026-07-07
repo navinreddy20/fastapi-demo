@@ -1,6 +1,4 @@
-
 from pydantic import BaseModel
-
 
 class Product(BaseModel):
     id: int
@@ -8,5 +6,3 @@ class Product(BaseModel):
     description: str
     price: float
     quantity: int
-
-   

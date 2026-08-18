@@ -1,0 +1,77 @@
+.tagline-card {
+  background: linear-gradient(135deg, rgba(255,255,255,.98), rgba(248,250,252,.96));
+  border: 1px solid rgba(255,255,255,.6);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  padding: 24px;
+  backdrop-filter: blur(8px);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.tagline-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #667eea, #764ba2, #f59e0b);
+  border-radius: 16px 16px 0 0;
+}
+
+.tagline-content h3 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.5px;
+}
+
+.tagline-content p {
+  margin: 0 0 20px;
+  color: #6b7280;
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+  font-style: italic;
+}
+
+.company-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: rgba(249,250,251,.7);
+  border: 1px solid rgba(229,231,235,.5);
+  border-radius: 12px;
+  margin: 0 auto;
+  max-width: fit-content;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+
+.powered-by {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.company-name {
+  font-size: 18px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
